@@ -11,7 +11,7 @@ class UserIdentity extends CUserIdentity
     
     public function authenticate()
     {
-        $record = $this->loadUser($this->password, Usuario::HABILITADO);
+        $record = $this->loadUser($this->username, Usuario::HABILITADO);
        
         if($record === null)
         {
