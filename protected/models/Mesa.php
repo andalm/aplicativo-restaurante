@@ -7,14 +7,14 @@
  * @property integer $id
  * @property string $nombre
  * @property integer $estado
+ * @property integer $sucursalId
  *
  * The followings are the available model relations:
+ * @property Sucursal $sucursal
  * @property Pedido[] $pedidos
  */
 class Mesa extends CActiveRecord
 {
-	 const HABILITADO = 1;
-	 const DESHABILITADO = 0;
 	/**
 	 * @return string the associated database table name
 	 */
@@ -31,12 +31,12 @@ class Mesa extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('nombre, estado', 'required'),
-			array('estado', 'numerical', 'integerOnly'=>true),
+			array('nombre, sucursalId', 'required'),
+			array('estado, sucursalId', 'numerical', 'integerOnly'=>true),
 			array('nombre', 'length', 'max'=>45),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, nombre, estado', 'safe', 'on'=>'search'),
+			array('id, nombre, estado, sucursalId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -48,7 +48,8 @@ class Mesa extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'pedidos' => array(self::HAS_MANY, 'Pedido', 'idMesa'),
+			'sucursal' => array(self::BELONGS_TO, 'Sucursal', 'sucursalId'),
+			'pedidos' => array(self::HAS_MANY, 'Pedido', 'mesaId'),
 		);
 	}
 
@@ -59,8 +60,9 @@ class Mesa extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'nombre' => 'Número de mesa',
+			'nombre' => 'El numero de mesa',
 			'estado' => 'Estado actual de la mesa.1: Habilitado, 0: Deshabilitado',
+			'sucursalId' => 'Sucursal a la que pertence la mesa',
 		);
 	}
 
@@ -84,7 +86,8 @@ class Mesa extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('nombre',$this->nombre,true);
-                $criteria->addCondition('estado = ' . Mesa::HABILITADO);
+		$criteria->compare('estado',$this->estado);
+		$criteria->compare('sucursalId',$this->sucursalId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

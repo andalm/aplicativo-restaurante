@@ -1,31 +1,29 @@
 <?php
 
 /**
- * This is the model class for table "PedidoDetalle".
+ * This is the model class for table "Inventario".
  *
- * The followings are the available columns in table 'PedidoDetalle':
+ * The followings are the available columns in table 'Inventario':
  * @property integer $id
- * @property double $cantidad
- * @property string $valorUnitario
+ * @property string $fecha
  * @property string $total
- * @property integer $pedidoId
- * @property integer $productoId
- * @property string $observaciones
- * @property integer $detalleTipoMovimientoId
+ * @property integer $InventarioTipoId
+ * @property string $totalUnidades
+ * @property integer $sucursalId
  *
  * The followings are the available model relations:
- * @property Pedido $pedido
- * @property Producto $producto
- * @property DetalleTipoMovimiento $detalleTipoMovimiento
+ * @property InventarioTipo $inventarioTipo
+ * @property Sucursal $sucursal
+ * @property InventarioDetalle[] $inventarioDetalles
  */
-class PedidoDetalle extends CActiveRecord
+class Inventario extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'PedidoDetalle';
+		return 'Inventario';
 	}
 
 	/**
@@ -36,14 +34,12 @@ class PedidoDetalle extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('pedidoId, productoId, detalleTipoMovimientoId', 'required'),
-			array('pedidoId, productoId, detalleTipoMovimientoId', 'numerical', 'integerOnly'=>true),
-			array('cantidad', 'numerical'),
-			array('valorUnitario, total', 'length', 'max'=>20),
-			array('observaciones', 'length', 'max'=>200),
+			array('fecha, InventarioTipoId, sucursalId', 'required'),
+			array('InventarioTipoId, sucursalId', 'numerical', 'integerOnly'=>true),
+			array('total, totalUnidades', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, cantidad, valorUnitario, total, pedidoId, productoId, observaciones, detalleTipoMovimientoId', 'safe', 'on'=>'search'),
+			array('id, fecha, total, InventarioTipoId, totalUnidades, sucursalId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,9 +51,9 @@ class PedidoDetalle extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'pedido' => array(self::BELONGS_TO, 'Pedido', 'pedidoId'),
-			'producto' => array(self::BELONGS_TO, 'Producto', 'productoId'),
-			'detalleTipoMovimiento' => array(self::BELONGS_TO, 'DetalleTipoMovimiento', 'detalleTipoMovimientoId'),
+			'inventarioTipo' => array(self::BELONGS_TO, 'InventarioTipo', 'InventarioTipoId'),
+			'sucursal' => array(self::BELONGS_TO, 'Sucursal', 'sucursalId'),
+			'inventarioDetalles' => array(self::HAS_MANY, 'InventarioDetalle', 'inventarioId'),
 		);
 	}
 
@@ -68,13 +64,11 @@ class PedidoDetalle extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'cantidad' => 'Cantidad de producto',
-			'valorUnitario' => 'Valor unitario de producto ',
-			'total' => 'Cantidad * el valor unitario, da la cantidad en dinero total del detalle',
-			'pedidoId' => 'Numero de pedido',
-			'productoId' => 'Producto o item del pedido',
-			'observaciones' => 'Observaciones de cada producto en el pedido',
-			'detalleTipoMovimientoId' => 'Indetificado de tipo de detalle',
+			'fecha' => 'Fecha en la que se registra el inventario',
+			'total' => 'Suma total del detalle de inventario',
+			'InventarioTipoId' => 'Tipo de inventario',
+			'totalUnidades' => 'Sumatoria total de unidades del detalle de inventario',
+			'sucursalId' => 'Sucursal a la que pertenece el inventario',
 		);
 	}
 
@@ -97,13 +91,11 @@ class PedidoDetalle extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('cantidad',$this->cantidad);
-		$criteria->compare('valorUnitario',$this->valorUnitario,true);
+		$criteria->compare('fecha',$this->fecha,true);
 		$criteria->compare('total',$this->total,true);
-		$criteria->compare('pedidoId',$this->pedidoId);
-		$criteria->compare('productoId',$this->productoId);
-		$criteria->compare('observaciones',$this->observaciones,true);
-		$criteria->compare('detalleTipoMovimientoId',$this->detalleTipoMovimientoId);
+		$criteria->compare('InventarioTipoId',$this->InventarioTipoId);
+		$criteria->compare('totalUnidades',$this->totalUnidades,true);
+		$criteria->compare('sucursalId',$this->sucursalId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -114,7 +106,7 @@ class PedidoDetalle extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return PedidoDetalle the static model class
+	 * @return Inventario the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

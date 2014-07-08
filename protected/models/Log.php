@@ -6,11 +6,11 @@
  * The followings are the available columns in table 'Log':
  * @property integer $id
  * @property string $actividad
- * @property integer $idUsuario
+ * @property integer $usuarioId
  * @property string $fecha
  *
  * The followings are the available model relations:
- * @property Usuario $idUsuario0
+ * @property Usuario $usuario
  */
 class Log extends CActiveRecord
 {
@@ -30,12 +30,12 @@ class Log extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('actividad, idUsuario', 'required'),
-			array('idUsuario', 'numerical', 'integerOnly'=>true),
+			array('actividad, usuarioId', 'required'),
+			array('usuarioId', 'numerical', 'integerOnly'=>true),
 			array('actividad', 'length', 'max'=>100),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, actividad, idUsuario, fecha', 'safe', 'on'=>'search'),
+			array('id, actividad, usuarioId, fecha', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -47,7 +47,7 @@ class Log extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'idUsuario0' => array(self::BELONGS_TO, 'Usuario', 'idUsuario'),
+			'usuario' => array(self::BELONGS_TO, 'Usuario', 'usuarioId'),
 		);
 	}
 
@@ -59,7 +59,7 @@ class Log extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'actividad' => 'Actividad realizada por el usuario en cuestion',
-			'idUsuario' => 'Usuario que realiza la actividad',
+			'usuarioId' => 'Usuario que realiza la actividad',
 			'fecha' => 'Fecha y hora en que ocurrio la accion',
 		);
 	}
@@ -84,7 +84,7 @@ class Log extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('actividad',$this->actividad,true);
-		$criteria->compare('idUsuario',$this->idUsuario);
+		$criteria->compare('usuarioId',$this->usuarioId);
 		$criteria->compare('fecha',$this->fecha,true);
 
 		return new CActiveDataProvider($this, array(

@@ -7,37 +7,58 @@
  */
 class UserIdentity extends CUserIdentity
 {
-	/**
-	 * Authenticates a user.
-	 * The example implementation makes sure if the username and password
-	 * are both 'demo'.
-	 * In practical applications, this should be changed to authenticate
-	 * against some persistent user identity storage (e.g. database).
-	 * @return boolean whether authentication succeeds.
-	 */
-	private $_id;
-	
+    private $_id;
+    
     public function authenticate()
     {
-        $record=Usuario::model()->findByAttributes(array('nombreUsuario' => $this->username, 'estado' => 1));
-		
-        if($record===null)
-            $this->errorCode=self::ERROR_USERNAME_INVALID;
-        else if($record->contrasena!==crypt($this->password, $record->contrasena . Yii::app()->params['salt']))
-            $this->errorCode=self::ERROR_PASSWORD_INVALID;
+        $record = $this->loadUser($this->password, Usuario::HABILITADO);
+       
+        if($record === null)
+        {
+            $this->errorCode = !self::ERROR_USERNAME_INVALID;
+        }
+        else if($record->contrasena !== crypt($this->password,$record->contrasena))
+        {
+            $this->errorCode = !self::ERROR_PASSWORD_INVALID;
+        }
         else
         {
-            $this->_id=$record->id;
-            $this->setState('nombreUsuario', $record->nombreUsuario);
-            $this->setState('idPerfil', $record->idPerfil);
-            $this->setState('fullName', $record->getFullName());
-            $this->errorCode=self::ERROR_NONE;
+            $this->saveLog($record->id);
+            $this->setStates($record);
+            $this->errorCode = self::ERROR_NONE;
         }
-        return !$this->errorCode;
+        
+        return $this->errorCode;
     }
  
     public function getId()
     {
         return $this->_id;
+    }
+    
+    protected function loadUser($username, $estado)
+    {
+        return Usuario::model()->findByAttributes([
+            'nombreUsuario' => $username,
+            'estado' => $estado,
+        ]);
+    }
+    
+    protected function setStates($model)
+    {
+        $this->_id = $model->id;
+        $this->setState('fullName', $model->fullName);
+        $this->setState('name', $model->nombreUsuario);
+        $this->setState('prefilId', $model->prefilId);
+    }
+    
+    protected function saveLog($id)
+    {
+        $log = new Log();        
+        $log->attributes = [
+            'actividad' => 'Entrada la la aplicación',
+            'usuarioId' => $id,
+        ];
+        $log->save();
     }
 }

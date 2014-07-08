@@ -26,7 +26,7 @@
 			</div><!-- header -->
 
 			<div id="mainmenu">
-				<?php $this->widget('zii.widgets.CMenu',array(
+				<?php /*$this->widget('zii.widgets.CMenu',array(
 					'items'=>array(
 						array('label'=>'Inicio', 'url'=>array('/site/index'), 'visible' => Yii::app()->user->isGuest),
 						array(
@@ -58,10 +58,10 @@
 							'url' => array(
 								'/Administrador/pedido'
 							), 
-							'visible' => Yii::app()->user->getState('idPerfil') == 1),
+							'visible' => Yii::app()->user->getState('prefilId') == 1),
 						array('label'=>'Salir ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
 					),
-				)); ?>
+				))*/ ?>
 			</div><!-- mainmenu -->
 			<?php if(isset($this->breadcrumbs)):?>
 				<?php $this->widget('zii.widgets.CBreadcrumbs', array(
@@ -82,10 +82,8 @@
 				) ?>.
 				<br/>
 				Todos los derechos reservados.<br/>
-				<?php echo Yii::powered(); ?>
 			</div><!-- footer -->
 
 		</div><!-- page -->
-
 	</body>
 </html>

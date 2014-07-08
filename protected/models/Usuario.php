@@ -10,18 +10,30 @@
  * @property string $documento
  * @property string $telefono
  * @property string $movil
- * @property integer $idPerfil
+ * @property integer $prefilId
  * @property string $nombreUsuario
- * @property string $contraseña
+ * @property string $contrasena
  * @property integer $estado
+ * @property integer $sucursalId
  *
  * The followings are the available model relations:
  * @property Log[] $logs
  * @property Pedido[] $pedidos
- * @property Perfil $idPerfil0
+ * @property Perfil $prefil
+ * @property Sucursal $sucursal
  */
 class Usuario extends CActiveRecord
 {
+        /**
+         * @var integer usuarios activos 
+         */
+        const HABILITADO = 1;
+
+        /**
+         * @var integer usuarios inactivos (eliminados)
+         */
+        const DESHABILITADO = 0;
+        
 	/**
 	 * @return string the associated database table name
 	 */
@@ -38,12 +50,12 @@ class Usuario extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('nombres, idPerfil, nombreUsuario, contrasena, estado', 'required'),
-			array('idPerfil, estado', 'numerical', 'integerOnly'=>true),
+			array('nombres, prefilId, nombreUsuario, contrasena, sucursalId', 'required'),
+			array('prefilId, estado, sucursalId', 'numerical', 'integerOnly'=>true),
 			array('nombres, apellidos, documento, telefono, movil, nombreUsuario, contrasena', 'length', 'max'=>45),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('nombres, apellidos, documento, telefono, movil, nombreUsuario', 'safe', 'on'=>'search'),
+			array('id, nombres, apellidos, documento, telefono, movil, prefilId, nombreUsuario, contrasena, estado, sucursalId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,9 +67,10 @@ class Usuario extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'logs' => array(self::HAS_MANY, 'Log', 'idUsuario'),
-			'pedidos' => array(self::HAS_MANY, 'Pedido', 'idUsuario'),
-			'idPerfil0' => array(self::BELONGS_TO, 'Perfil', 'idPerfil'),
+			'logs' => array(self::HAS_MANY, 'Log', 'usuarioId'),
+			'pedidos' => array(self::HAS_MANY, 'Pedido', 'usuarioId'),
+			'prefil' => array(self::BELONGS_TO, 'Perfil', 'prefilId'),
+			'sucursal' => array(self::BELONGS_TO, 'Sucursal', 'sucursalId'),
 		);
 	}
 
@@ -68,15 +81,16 @@ class Usuario extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'nombres' => 'Nombres',
-			'apellidos' => 'Apellidos',
-			'documento' => 'Documento de indentidad',
-			'telefono' => 'Telefono',
-			'movil' => 'Movil',
-			'idPerfil' => 'Perfil',
-			'nombreUsuario' => 'Nombre de usuario',
-			'contrasena' => 'Contraseña',
-			'estado' => 'Estado',
+			'nombres' => 'Nombre del usuario',
+			'apellidos' => 'Apellido del usuario',
+			'documento' => 'Documento de indentidad del usuario',
+			'telefono' => 'Telefono/s fijo del usuario',
+			'movil' => 'Numero/s movil del usuario',
+			'prefilId' => 'Perfil del usuario en el sistema',
+			'nombreUsuario' => 'Nombre de usuario (para autentificacion en el sistema)',
+			'contrasena' => 'Contraseña para autentificacion en el sistema',
+			'estado' => 'Estado actual del usuario. 1: Habilitado, 0: Deshabilitado',
+			'sucursalId' => 'Sucursal a la que pertenece el usuario',
 		);
 	}
 
@@ -104,10 +118,11 @@ class Usuario extends CActiveRecord
 		$criteria->compare('documento',$this->documento,true);
 		$criteria->compare('telefono',$this->telefono,true);
 		$criteria->compare('movil',$this->movil,true);
-		$criteria->compare('idPerfil',$this->idPerfil);
+		$criteria->compare('prefilId',$this->prefilId);
 		$criteria->compare('nombreUsuario',$this->nombreUsuario,true);
 		$criteria->compare('contrasena',$this->contrasena,true);
-		$criteria->compare('estado', 1);
+		$criteria->compare('estado',$this->estado);
+		$criteria->compare('sucursalId',$this->sucursalId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -124,19 +139,20 @@ class Usuario extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-	
-	public function getFullName()
-	{
-		$fullName = "";
-		$nombres = split('[[:space:]]', strtolower(trim($this->nombres)));
-		$apellidos = split('[[:space:]]', strtolower(trim($this->apellidos)));
-		
-		foreach($nombres as $nombre)
-			$fullName .= ucfirst($nombre) . " "; 
-		
-		foreach($apellidos as $apellido)
-			$fullName .= ucfirst($apellido) . " "; 
-			
-		return $fullName;
-	}
+        
+        public function init()
+        {
+            if($this->isNewRecord)
+            {
+                $this->pedidos = array(new Pedido());
+                $this->prefil = new Perfil();
+                $this->sucursal = new Sucursal();
+                $this->logs = array(new Log());
+            }        
+        }
+        
+        public function getfullName()
+        {
+            return $this->nombres . " " . $this->apellidos;
+        }
 }

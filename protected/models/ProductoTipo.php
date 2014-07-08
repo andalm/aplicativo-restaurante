@@ -6,6 +6,7 @@
  * The followings are the available columns in table 'ProductoTipo':
  * @property integer $id
  * @property string $nombre
+ * @property integer $estado
  *
  * The followings are the available model relations:
  * @property Producto[] $productos
@@ -29,10 +30,11 @@ class ProductoTipo extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('nombre', 'required'),
+			array('estado', 'numerical', 'integerOnly'=>true),
 			array('nombre', 'length', 'max'=>45),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, nombre', 'safe', 'on'=>'search'),
+			array('id, nombre, estado', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -44,7 +46,7 @@ class ProductoTipo extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'productos' => array(self::HAS_MANY, 'Producto', 'ProductoTipoId'),
+			'productos' => array(self::HAS_MANY, 'Producto', 'productoTipoId'),
 		);
 	}
 
@@ -55,7 +57,8 @@ class ProductoTipo extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'nombre' => 'Nombre',
+			'nombre' => 'Nombre del tipo de producto',
+			'estado' => '1: Habilitado, 0: Deshabilitado',
 		);
 	}
 
@@ -79,6 +82,7 @@ class ProductoTipo extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('nombre',$this->nombre,true);
+		$criteria->compare('estado',$this->estado);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

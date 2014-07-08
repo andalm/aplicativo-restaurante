@@ -1,31 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "PedidoDetalle".
+ * This is the model class for table "ImpuestoMovimiento".
  *
- * The followings are the available columns in table 'PedidoDetalle':
+ * The followings are the available columns in table 'ImpuestoMovimiento':
  * @property integer $id
- * @property double $cantidad
- * @property string $valorUnitario
+ * @property double $porcentaje
  * @property string $total
- * @property integer $pedidoId
- * @property integer $productoId
- * @property string $observaciones
- * @property integer $detalleTipoMovimientoId
+ * @property integer $impuestoCambioId
  *
  * The followings are the available model relations:
- * @property Pedido $pedido
- * @property Producto $producto
- * @property DetalleTipoMovimiento $detalleTipoMovimiento
+ * @property ImpuestoCambio $impuestoCambio
+ * @property Pedido[] $pedidos
  */
-class PedidoDetalle extends CActiveRecord
+class ImpuestoMovimiento extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'PedidoDetalle';
+		return 'ImpuestoMovimiento';
 	}
 
 	/**
@@ -36,14 +31,13 @@ class PedidoDetalle extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('pedidoId, productoId, detalleTipoMovimientoId', 'required'),
-			array('pedidoId, productoId, detalleTipoMovimientoId', 'numerical', 'integerOnly'=>true),
-			array('cantidad', 'numerical'),
-			array('valorUnitario, total', 'length', 'max'=>20),
-			array('observaciones', 'length', 'max'=>200),
+			array('impuestoCambioId', 'required'),
+			array('impuestoCambioId', 'numerical', 'integerOnly'=>true),
+			array('porcentaje', 'numerical'),
+			array('total', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, cantidad, valorUnitario, total, pedidoId, productoId, observaciones, detalleTipoMovimientoId', 'safe', 'on'=>'search'),
+			array('id, porcentaje, total, impuestoCambioId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,9 +49,8 @@ class PedidoDetalle extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'pedido' => array(self::BELONGS_TO, 'Pedido', 'pedidoId'),
-			'producto' => array(self::BELONGS_TO, 'Producto', 'productoId'),
-			'detalleTipoMovimiento' => array(self::BELONGS_TO, 'DetalleTipoMovimiento', 'detalleTipoMovimientoId'),
+			'impuestoCambio' => array(self::BELONGS_TO, 'ImpuestoCambio', 'impuestoCambioId'),
+			'pedidos' => array(self::HAS_MANY, 'Pedido', 'impuestoMovimientoId'),
 		);
 	}
 
@@ -68,13 +61,9 @@ class PedidoDetalle extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'cantidad' => 'Cantidad de producto',
-			'valorUnitario' => 'Valor unitario de producto ',
-			'total' => 'Cantidad * el valor unitario, da la cantidad en dinero total del detalle',
-			'pedidoId' => 'Numero de pedido',
-			'productoId' => 'Producto o item del pedido',
-			'observaciones' => 'Observaciones de cada producto en el pedido',
-			'detalleTipoMovimientoId' => 'Indetificado de tipo de detalle',
+			'porcentaje' => 'Procentaje por defecto o aplicado por el usuario que captutra el pedido',
+			'total' => 'Total de importe a pagar al aplicar el impuesto',
+			'impuestoCambioId' => 'Cambio aplicado al impuesto',
 		);
 	}
 
@@ -97,13 +86,9 @@ class PedidoDetalle extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('cantidad',$this->cantidad);
-		$criteria->compare('valorUnitario',$this->valorUnitario,true);
+		$criteria->compare('porcentaje',$this->porcentaje);
 		$criteria->compare('total',$this->total,true);
-		$criteria->compare('pedidoId',$this->pedidoId);
-		$criteria->compare('productoId',$this->productoId);
-		$criteria->compare('observaciones',$this->observaciones,true);
-		$criteria->compare('detalleTipoMovimientoId',$this->detalleTipoMovimientoId);
+		$criteria->compare('impuestoCambioId',$this->impuestoCambioId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -114,7 +99,7 @@ class PedidoDetalle extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return PedidoDetalle the static model class
+	 * @return ImpuestoMovimiento the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

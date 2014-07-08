@@ -4,24 +4,31 @@
  * This is the model class for table "Pedido".
  *
  * The followings are the available columns in table 'Pedido':
- * @property string $id
+ * @property integer $id
  * @property string $total
  * @property string $tiempoInicio
  * @property string $tiempoFinal
  * @property integer $estado
- * @property integer $idUsuario
- * @property integer $idMesa
+ * @property integer $usuarioId
+ * @property integer $mesaId
+ * @property integer $impuestoMovimientoId
+ * @property string $propina
+ * @property integer $numeroPersonas
+ * @property integer $consecutivoId
  *
  * The followings are the available model relations:
- * @property Mesa $idMesa0
- * @property Usuario $idUsuario0
+ * @property Usuario $usuario
+ * @property Mesa $mesa
+ * @property ImpuestoMovimiento $impuestoMovimiento
+ * @property Consecutivo $consecutivo
  * @property PedidoDetalle[] $pedidoDetalles
  */
 class Pedido extends CActiveRecord
 {
-	const ENVIADO = 1;
-	const DESPACHADO = 2;
-	const CANCELADO = 3;
+        const PEDIDO_ERROR = 0;
+	const PEDIDO_SUCESS = 1;
+	const PEDIDO_DISPATCHED = 2;
+        
 	/**
 	 * @return string the associated database table name
 	 */
@@ -38,13 +45,13 @@ class Pedido extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('tiempoInicio, estado, idUsuario, idMesa', 'required'),
-			array('estado, idUsuario, idMesa', 'numerical', 'integerOnly'=>true),
-			array('id', 'length', 'max'=>11),
-			array('total', 'length', 'max'=>10),
+			array('tiempoInicio, usuarioId, mesaId, impuestoMovimientoId, consecutivoId', 'required'),
+			array('estado, usuarioId, mesaId, impuestoMovimientoId, numeroPersonas, consecutivoId', 'numerical', 'integerOnly'=>true),
+			array('total, propina', 'length', 'max'=>20),
+			array('tiempoFinal', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, total, tiempoInicio, tiempoFinal, estado, idUsuario, idMesa', 'safe', 'on'=>'search'),
+			array('id, total, tiempoInicio, tiempoFinal, estado, usuarioId, mesaId, impuestoMovimientoId, propina, numeroPersonas, consecutivoId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -56,9 +63,11 @@ class Pedido extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'idMesa0' => array(self::BELONGS_TO, 'Mesa', 'idMesa'),
-			'idUsuario0' => array(self::BELONGS_TO, 'Usuario', 'idUsuario'),
-			'pedidoDetalles' => array(self::HAS_MANY, 'PedidoDetalle', 'idPedido'),
+			'usuario' => array(self::BELONGS_TO, 'Usuario', 'usuarioId'),
+			'mesa' => array(self::BELONGS_TO, 'Mesa', 'mesaId'),
+			'impuestoMovimiento' => array(self::BELONGS_TO, 'ImpuestoMovimiento', 'impuestoMovimientoId'),
+			'consecutivo' => array(self::BELONGS_TO, 'Consecutivo', 'consecutivoId'),
+			'pedidoDetalles' => array(self::HAS_MANY, 'PedidoDetalle', 'pedidoId'),
 		);
 	}
 
@@ -68,13 +77,17 @@ class Pedido extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'Consecutivo',
-			'total' => 'Total',
+			'id' => 'ID',
+			'total' => 'Valor total del pedido',
 			'tiempoInicio' => 'Tiempo en que se toma el pedido',
 			'tiempoFinal' => 'Tiempo de despacho del pedido',
 			'estado' => '1: Enviado, 2: Despachado, 3: Cancelado',
-			'idUsuario' => 'Mesero',
-			'idMesa' => 'Mesa',
+			'usuarioId' => 'Usuario que realizo el pedido ref tabla usuario',
+			'mesaId' => 'Mesa en que se realizo el pedido',
+			'impuestoMovimientoId' => 'Impuesto aplicado al pedido',
+			'propina' => 'Propina voluntaria dada por el cliente',
+			'numeroPersonas' => 'Cantidad de personas en la mesa al momento de hacer pedido',
+			'consecutivoId' => 'Identificador del consecutivo que se lleva por cada sucursal',
 		);
 	}
 
@@ -96,13 +109,17 @@ class Pedido extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id,true);
+		$criteria->compare('id',$this->id);
 		$criteria->compare('total',$this->total,true);
 		$criteria->compare('tiempoInicio',$this->tiempoInicio,true);
 		$criteria->compare('tiempoFinal',$this->tiempoFinal,true);
-                $criteria->addCondition('estado = ' . Pedido::ENVIADO);
-		$criteria->compare('idUsuario',$this->idUsuario);
-		$criteria->compare('idMesa',$this->idMesa);
+		$criteria->compare('estado',$this->estado);
+		$criteria->compare('usuarioId',$this->usuarioId);
+		$criteria->compare('mesaId',$this->mesaId);
+		$criteria->compare('impuestoMovimientoId',$this->impuestoMovimientoId);
+		$criteria->compare('propina',$this->propina,true);
+		$criteria->compare('numeroPersonas',$this->numeroPersonas);
+		$criteria->compare('consecutivoId',$this->consecutivoId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -118,11 +135,5 @@ class Pedido extends CActiveRecord
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
-	}
-	
-	public function afterFind() 
-	{
-		$this->total = Yii::app()->format->number($this->total);
-		return parent::afterFind();
 	}
 }

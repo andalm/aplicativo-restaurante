@@ -1,29 +1,33 @@
 <?php
 
 /**
- * This is the model class for table "Producto".
+ * This is the model class for table "Sucursal".
  *
- * The followings are the available columns in table 'Producto':
+ * The followings are the available columns in table 'Sucursal':
  * @property integer $id
  * @property string $nombre
- * @property string $valor
+ * @property string $direccion
+ * @property string $telefonos
  * @property integer $estado
- * @property integer $productoTipoId
- * @property string $imagen
+ * @property integer $municipioId
+ * @property integer $paisId
  *
  * The followings are the available model relations:
- * @property InventarioDetalle[] $inventarioDetalles
- * @property PedidoDetalle[] $pedidoDetalles
- * @property ProductoTipo $productoTipo
+ * @property Consecutivo[] $consecutivos
+ * @property Inventario[] $inventarios
+ * @property Mesa[] $mesas
+ * @property Municipio $municipio
+ * @property Pais $pais
+ * @property Usuario[] $usuarios
  */
-class Producto extends CActiveRecord
+class Sucursal extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'Producto';
+		return 'Sucursal';
 	}
 
 	/**
@@ -34,14 +38,13 @@ class Producto extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('nombre, productoTipoId', 'required'),
-			array('estado, productoTipoId', 'numerical', 'integerOnly'=>true),
-			array('nombre', 'length', 'max'=>45),
-			array('valor', 'length', 'max'=>10),
-			array('imagen', 'length', 'max'=>100),
+			array('nombre, direccion, telefonos, municipioId, paisId', 'required'),
+			array('estado, municipioId, paisId', 'numerical', 'integerOnly'=>true),
+			array('nombre, direccion', 'length', 'max'=>45),
+			array('telefonos', 'length', 'max'=>200),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, nombre, valor, estado, productoTipoId, imagen', 'safe', 'on'=>'search'),
+			array('id, nombre, direccion, telefonos, estado, municipioId, paisId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,9 +56,12 @@ class Producto extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'inventarioDetalles' => array(self::HAS_MANY, 'InventarioDetalle', 'productoId'),
-			'pedidoDetalles' => array(self::HAS_MANY, 'PedidoDetalle', 'productoId'),
-			'productoTipo' => array(self::BELONGS_TO, 'ProductoTipo', 'productoTipoId'),
+			'consecutivos' => array(self::HAS_MANY, 'Consecutivo', 'sucursalId'),
+			'inventarios' => array(self::HAS_MANY, 'Inventario', 'sucursalId'),
+			'mesas' => array(self::HAS_MANY, 'Mesa', 'sucursalId'),
+			'municipio' => array(self::BELONGS_TO, 'Municipio', 'municipioId'),
+			'pais' => array(self::BELONGS_TO, 'Pais', 'paisId'),
+			'usuarios' => array(self::HAS_MANY, 'Usuario', 'sucursalId'),
 		);
 	}
 
@@ -66,11 +72,12 @@ class Producto extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'nombre' => 'Nombre del producto',
-			'valor' => 'Valor del producto',
+			'nombre' => 'Nombre de la sucursal',
+			'direccion' => 'Direccion en donde se encuentra ubicada la sucursal',
+			'telefonos' => 'Telefonos de contacto de la sucursal',
 			'estado' => '1: Habilitado, 0: Deshabilitado',
-			'productoTipoId' => 'Tipo de producto, del producto en cuestion',
-			'imagen' => 'Imagen del producto',
+			'municipioId' => 'Ciudad donde se encuentra ubicada la sucursal',
+			'paisId' => 'Pais en donde se encuentra ubicada la sucursal',
 		);
 	}
 
@@ -94,10 +101,11 @@ class Producto extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('nombre',$this->nombre,true);
-		$criteria->compare('valor',$this->valor,true);
+		$criteria->compare('direccion',$this->direccion,true);
+		$criteria->compare('telefonos',$this->telefonos,true);
 		$criteria->compare('estado',$this->estado);
-		$criteria->compare('productoTipoId',$this->productoTipoId);
-		$criteria->compare('imagen',$this->imagen,true);
+		$criteria->compare('municipioId',$this->municipioId);
+		$criteria->compare('paisId',$this->paisId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -108,7 +116,7 @@ class Producto extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return Producto the static model class
+	 * @return Sucursal the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

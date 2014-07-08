@@ -2,10 +2,6 @@
 
 class PedidoController extends Controller
 {
-	const PEDIDO_ERROR = 0;
-	const PEDIDO_SUCESS = 1;
-	const PEDIDO_DISPATCHED = 2;
-	
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.

@@ -1,29 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "Producto".
+ * This is the model class for table "DetalleTipoMovimiento".
  *
- * The followings are the available columns in table 'Producto':
+ * The followings are the available columns in table 'DetalleTipoMovimiento':
  * @property integer $id
- * @property string $nombre
- * @property string $valor
+ * @property double $porcentaje
  * @property integer $estado
- * @property integer $productoTipoId
- * @property string $imagen
+ * @property integer $detalleTipoId
  *
  * The followings are the available model relations:
- * @property InventarioDetalle[] $inventarioDetalles
+ * @property DetalleTipo $detalleTipo
  * @property PedidoDetalle[] $pedidoDetalles
- * @property ProductoTipo $productoTipo
  */
-class Producto extends CActiveRecord
+class DetalleTipoMovimiento extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'Producto';
+		return 'DetalleTipoMovimiento';
 	}
 
 	/**
@@ -34,14 +31,12 @@ class Producto extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('nombre, productoTipoId', 'required'),
-			array('estado, productoTipoId', 'numerical', 'integerOnly'=>true),
-			array('nombre', 'length', 'max'=>45),
-			array('valor', 'length', 'max'=>10),
-			array('imagen', 'length', 'max'=>100),
+			array('detalleTipoId', 'required'),
+			array('estado, detalleTipoId', 'numerical', 'integerOnly'=>true),
+			array('porcentaje', 'numerical'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, nombre, valor, estado, productoTipoId, imagen', 'safe', 'on'=>'search'),
+			array('id, porcentaje, estado, detalleTipoId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,9 +48,8 @@ class Producto extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'inventarioDetalles' => array(self::HAS_MANY, 'InventarioDetalle', 'productoId'),
-			'pedidoDetalles' => array(self::HAS_MANY, 'PedidoDetalle', 'productoId'),
-			'productoTipo' => array(self::BELONGS_TO, 'ProductoTipo', 'productoTipoId'),
+			'detalleTipo' => array(self::BELONGS_TO, 'DetalleTipo', 'detalleTipoId'),
+			'pedidoDetalles' => array(self::HAS_MANY, 'PedidoDetalle', 'detalleTipoMovimientoId'),
 		);
 	}
 
@@ -66,11 +60,9 @@ class Producto extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'nombre' => 'Nombre del producto',
-			'valor' => 'Valor del producto',
+			'porcentaje' => 'Procentaje de descuento aplicado',
 			'estado' => '1: Habilitado, 0: Deshabilitado',
-			'productoTipoId' => 'Tipo de producto, del producto en cuestion',
-			'imagen' => 'Imagen del producto',
+			'detalleTipoId' => 'Identificador del tipo de detalle',
 		);
 	}
 
@@ -93,11 +85,9 @@ class Producto extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('nombre',$this->nombre,true);
-		$criteria->compare('valor',$this->valor,true);
+		$criteria->compare('porcentaje',$this->porcentaje);
 		$criteria->compare('estado',$this->estado);
-		$criteria->compare('productoTipoId',$this->productoTipoId);
-		$criteria->compare('imagen',$this->imagen,true);
+		$criteria->compare('detalleTipoId',$this->detalleTipoId);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -108,7 +98,7 @@ class Producto extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return Producto the static model class
+	 * @return DetalleTipoMovimiento the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
