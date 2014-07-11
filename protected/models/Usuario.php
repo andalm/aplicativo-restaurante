@@ -10,7 +10,7 @@
  * @property string $documento
  * @property string $telefono
  * @property string $movil
- * @property integer $prefilId
+ * @property integer $perfilId
  * @property string $nombreUsuario
  * @property string $contrasena
  * @property integer $estado
@@ -50,12 +50,12 @@ class Usuario extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('nombres, prefilId, nombreUsuario, contrasena, sucursalId', 'required'),
-			array('prefilId, estado, sucursalId', 'numerical', 'integerOnly'=>true),
+			array('nombres, perfilId, nombreUsuario, contrasena, sucursalId', 'required'),
+			array('perfilId, estado, sucursalId', 'numerical', 'integerOnly'=>true),
 			array('nombres, apellidos, documento, telefono, movil, nombreUsuario, contrasena', 'length', 'max'=>45),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, nombres, apellidos, documento, telefono, movil, prefilId, nombreUsuario, contrasena, estado, sucursalId', 'safe', 'on'=>'search'),
+			array('id, nombres, apellidos, documento, telefono, movil, perfilId, nombreUsuario, contrasena, estado, sucursalId', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -69,7 +69,7 @@ class Usuario extends CActiveRecord
 		return array(
 			'logs' => array(self::HAS_MANY, 'Log', 'usuarioId'),
 			'pedidos' => array(self::HAS_MANY, 'Pedido', 'usuarioId'),
-			'prefil' => array(self::BELONGS_TO, 'Perfil', 'prefilId'),
+			'prefil' => array(self::BELONGS_TO, 'Perfil', 'perfilId'),
 			'sucursal' => array(self::BELONGS_TO, 'Sucursal', 'sucursalId'),
 		);
 	}

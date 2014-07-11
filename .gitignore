@@ -5,5 +5,7 @@ composer.lock
 .DS_Store
 Thumbs.db
 protected/config/
+nbproject/private/*
 *.log
+*.log.1
 *.bin
