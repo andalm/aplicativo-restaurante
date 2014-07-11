@@ -19,7 +19,7 @@
  * The followings are the available model relations:
  * @property Log[] $logs
  * @property Pedido[] $pedidos
- * @property Perfil $prefil
+ * @property Perfil $perfil
  * @property Sucursal $sucursal
  */
 class Usuario extends CActiveRecord
@@ -69,7 +69,7 @@ class Usuario extends CActiveRecord
 		return array(
 			'logs' => array(self::HAS_MANY, 'Log', 'usuarioId'),
 			'pedidos' => array(self::HAS_MANY, 'Pedido', 'usuarioId'),
-			'prefil' => array(self::BELONGS_TO, 'Perfil', 'perfilId'),
+			'perfil' => array(self::BELONGS_TO, 'Perfil', 'perfilId'),
 			'sucursal' => array(self::BELONGS_TO, 'Sucursal', 'sucursalId'),
 		);
 	}
@@ -86,7 +86,7 @@ class Usuario extends CActiveRecord
 			'documento' => 'Documento de indentidad del usuario',
 			'telefono' => 'Telefono/s fijo del usuario',
 			'movil' => 'Numero/s movil del usuario',
-			'prefilId' => 'Perfil del usuario en el sistema',
+			'perfilId' => 'Perfil del usuario en el sistema',
 			'nombreUsuario' => 'Nombre de usuario (para autentificacion en el sistema)',
 			'contrasena' => 'Contraseña para autentificacion en el sistema',
 			'estado' => 'Estado actual del usuario. 1: Habilitado, 0: Deshabilitado',
@@ -118,7 +118,7 @@ class Usuario extends CActiveRecord
 		$criteria->compare('documento',$this->documento,true);
 		$criteria->compare('telefono',$this->telefono,true);
 		$criteria->compare('movil',$this->movil,true);
-		$criteria->compare('prefilId',$this->prefilId);
+		$criteria->compare('perfilId',$this->perfilId);
 		$criteria->compare('nombreUsuario',$this->nombreUsuario,true);
 		$criteria->compare('contrasena',$this->contrasena,true);
 		$criteria->compare('estado',$this->estado);
