@@ -54,114 +54,108 @@ class PedidoController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$detect = Yii::app()->mobileDetect;
-		
-		if($detect->isMobile() && !Yii::app()->request->isAjaxRequest)
-		{
-			$model = new Pedido;
-			// Uncomment the following line if AJAX validation is needed
-			// $this->performAjaxValidation($model); 
-			
-			if(isset($_POST['Pedido']))
-			{
-				$model->attributes = $_POST['Pedido'];
-				$model->tiempoInicio = date('Y-m-d H:i:s');
-				$model->idUsuario = Yii::app()->user->id;
-				
-				if($model->validate())
-				{
-					$model->save();
-					$response = array();
-					
-					foreach($_POST['PedidoDetalle'] as $detalle)
-					{
-						foreach($detalle['idProducto'] as $key => $producto)
-						{
-							if(!empty($producto) && isset($detalle['cantidad'][$key]) && $detalle['cantidad'][$key] != 0)
-							{
-								$consultaProducto = Producto::model()->findByPk($producto);
-								$pedidoDetalle = new PedidoDetalle();
-								$pedidoDetalle->attributes = array(
-									'idProducto' => $producto,
-                                                                        'observaciones' => $detalle['observaciones'][$key],
-									'cantidad' => $detalle['cantidad'][$key],
-									'valorUnitario' => (double)$consultaProducto->getPricePlain(),
-									'total' => (double)$consultaProducto->getPricePlain() * (int)$detalle['cantidad'][$key],
-									'idPedido' => $model->id,
-								);
-								$model->total += $pedidoDetalle->total;
-																
-								if(!$pedidoDetalle->validate())
-								{
-									$model->delete();
-									$response = array(
-										'cod' => self::PEDIDO_ERROR,
-										'msg' => "Hay error en los items, por favor verifique.",
-									);
-									break;
-								}
-								else
-                                                                {
-                                                                    $pedidoDetalle->save();
-                                                                }
-									
-							}
-						}
-					}
-					
-					if($model->total != 0)
-					{
-						$model->update();
-					
-						if(count($response) == 0)
-							$response = array( 
-								'cod' => self::PEDIDO_SUCESS,
-								'msg' => "Pedido No. ".$model->id." guardado exitosamente.\nValor total: $".Yii::app()->format->number(
-									$model->total
-								),
-							);
-					}
-					else
-						$response = array(
-							'cod' => self::PEDIDO_ERROR,
-							'msg' => "Hay errores en el pedido, por favor verifique.",
-						);
-				}
-				else
-					$response = array(
-						'cod' => self::PEDIDO_ERROR,
-						'msg' => "Hay errores en el pedido, por favor verifique.",
-					);
-					
-				echo CJSON::encode($response);
-			}
-			else
-			{
-				$model->pedidoDetalles = array(new PedidoDetalle);
-				$model->idMesa0 = new Mesa;
-				
-				$productosTipo = ProductoTipo::model()->with(array(
-						'productos' => array(
-							'alias' => 'p',
-							'joinType' => 'LEFT JOIN',
-							'on' => 'p.ProductoTipoId = t.id and p.estado = 1',
-						),
-					)
-				)->findAll();
-			
-				$mesas = Mesa::model()->findAll();
-				
-				echo $this->renderPartial('create',array(
-					'model'=>$model,
-					'productosTipo'=>$productosTipo,
-					'mesas'=>$mesas,
-				));
-			}
-			
-			Yii::app()->end();
-		}
-		else
-			throw new CHttpException(404,'Página no encontrada.');
+            $detect = Yii::app()->mobileDetect;
+
+            if($detect->isMobile())
+            {
+                $pedido = new Pedido();
+                
+                if(isset($_POST['Pedido']))
+                {
+                    $pedido->attributes = $_POST['Pedido'];
+                    $pedido->tiempoInicio = date('Y-m-d H:i:s');
+                    $pedido->idUsuario = Yii::app()->user->id;
+                    $response = array();
+                    
+                    if($pedido->save())
+                    {
+                        
+
+                                    foreach($_POST['PedidoDetalle'] as $detalle)
+                                    {
+                                            foreach($detalle['idProducto'] as $key => $producto)
+                                            {
+                                                    if(!empty($producto) && isset($detalle['cantidad'][$key]) && $detalle['cantidad'][$key] != 0)
+                                                    {
+                                                            $consultaProducto = Producto::model()->findByPk($producto);
+                                                            $pedidoDetalle = new PedidoDetalle();
+                                                            $pedidoDetalle->attributes = array(
+                                                                    'idProducto' => $producto,
+                                                                    'observaciones' => $detalle['observaciones'][$key],
+                                                                    'cantidad' => $detalle['cantidad'][$key],
+                                                                    'valorUnitario' => (double)$consultaProducto->getPricePlain(),
+                                                                    'total' => (double)$consultaProducto->getPricePlain() * (int)$detalle['cantidad'][$key],
+                                                                    'idPedido' => $model->id,
+                                                            );
+                                                            $model->total += $pedidoDetalle->total;
+
+                                                            if(!$pedidoDetalle->validate())
+                                                            {
+                                                                    $model->delete();
+                                                                    $response = array(
+                                                                            'cod' => self::PEDIDO_ERROR,
+                                                                            'msg' => "Hay error en los items, por favor verifique.",
+                                                                    );
+                                                                    break;
+                                                            }
+                                                            else
+                                                            {
+                                                                $pedidoDetalle->save();
+                                                            }
+
+                                                    }
+                                            }
+                                    }
+
+                                    if($model->total != 0)
+                                    {
+                                            $model->update();
+
+                                            if(count($response) == 0)
+                                                    $response = array( 
+                                                            'cod' => self::PEDIDO_SUCESS,
+                                                            'msg' => "Pedido No. ".$model->id." guardado exitosamente.\nValor total: $".Yii::app()->format->number(
+                                                                    $model->total
+                                                            ),
+                                                    );
+                                    }
+                                    else
+                                            $response = array(
+                                                    'cod' => self::PEDIDO_ERROR,
+                                                    'msg' => "Hay errores en el pedido, por favor verifique.",
+                                            );
+                    }
+                    else
+                    {
+                        $response = array(
+                            'cod' => Pedido::ERROR,
+                            'msg' => "Hay errores en el pedido, por favor verifique.",
+                        );
+                    }
+
+                    CJSON::encode($response);
+                }
+                else
+                {
+                    $mesas = Mesa::model()->findAllByAttributes([
+                        'sucursalId' => Yii::app()->user->getState('sucursal'),
+                    ]);
+                    
+                    $porductosxTipo = ProductoTipo::model()->findAll();
+                    
+                    $this->renderPartial('create',array(
+                        'pedido' => $pedido,
+                        'porductosxTipo' => $porductosxTipo,
+                        'mesas' => $mesas,
+                    ));                   
+                }
+                
+                Yii::app()->end();
+            }
+            else
+            {
+               throw new CHttpException(404,'Página no encontrada.'); 
+            }			
 	}
 
 	/**

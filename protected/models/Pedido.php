@@ -25,9 +25,10 @@
  */
 class Pedido extends CActiveRecord
 {
-        const PEDIDO_ERROR = 0;
-	const PEDIDO_SUCESS = 1;
-	const PEDIDO_DISPATCHED = 2;
+        const ERROR = 0;
+	const ENVIADO = 1;
+	const DESPACHADO = 2;
+        const CANCELADO = 3;
         
 	/**
 	 * @return string the associated database table name
@@ -136,4 +137,12 @@ class Pedido extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+        
+        public function init()
+        {
+            if($this->isNewRecord)
+            {
+                $this->pedidoDetalles = [new PedidoDetalle];            
+            }
+        }
 }

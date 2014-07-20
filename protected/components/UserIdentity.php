@@ -49,7 +49,8 @@ class UserIdentity extends CUserIdentity
         $this->_id = $model->id;
         $this->setState('fullName', $model->fullName);
         $this->setState('name', $model->nombreUsuario);
-        $this->setState('prefilId', $model->prefilId);
+        $this->setState('perfilId', $model->perfilId);
+        $this->setState('sucursal', $model->sucursalId);
     }
     
     protected function saveLog($id)

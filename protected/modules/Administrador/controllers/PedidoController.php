@@ -59,7 +59,7 @@ class PedidoController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Pedido;
+		$model = new Pedido;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -67,6 +67,7 @@ class PedidoController extends Controller
 		if(isset($_POST['Pedido']))
 		{
 			$model->attributes=$_POST['Pedido'];
+                        
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -156,10 +157,11 @@ class PedidoController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Pedido::model()->find(array(
+		$model= Pedido::model()->find(array(
 			'condition' => 'id = :id and estado = :estado',
 			'params' => array(':id' => $id, ':estado' => Pedido::ENVIADO),
 		));
+                
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

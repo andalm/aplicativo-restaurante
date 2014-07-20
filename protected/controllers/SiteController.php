@@ -28,10 +28,10 @@ class SiteController extends Controller
 	public function actionIndex()
 	{
             $model = new LoginForm;
-
+            
             // renders the view file 'protected/views/site/index.php'
             // using the default layout 'protected/views/layouts/main.php'
-
+            
             $this->render('index', array(
                     'model' => $model,
             ));
@@ -75,10 +75,6 @@ class SiteController extends Controller
                     Yii::app()->user->logout();
                 }
             }
-            else
-            {
-                Yii::app()->user->logout();
-            }    
             
             $this->respuestaMovil();            
             $this->render('index', array(

@@ -11,7 +11,7 @@
     <div role="main" class="ui-content">
         <?php if(!Yii::app()->user->isGuest): ?>
             <center>
-                <h2><?php echo Yii::app()->user->fullName ?></h2>
+                <h2><?php echo Yii::app()->user->getState("fullName") ?></h2>
                 
                 <p>
                     <a 
@@ -24,7 +24,7 @@
                         data-wrapperels="span"
                         data-theme="c" 
                         class="ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-bottom">
-                                Hacer Pedido
+                            Hacer Pedido
                     </a>
                     <a 
                         href="http://restaurante.esspia.com/index.php?r=Mesero/pedido/list"
@@ -36,16 +36,12 @@
                         data-wrapperels="span"
                         data-theme="c" 
                         class="ui-btn ui-btn-inline ui-icon-bars ui-btn-icon-bottom">
-                                Ver Pedidos
+                            Ver Pedidos
                     </a>
                 </p>
             </center>			
         <?php endif ?>
-    </div>
-	
-    <a href="#" onclick="window.open('<?php echo Yii::app()->params['developersUrl'] ?>', '_system');">
-        <div data-role="footer" data-position="fixed" class="ui-footer ui-bar-a ui-footer-fixed slideup" role="contentinfo">
-            <center><?php echo Yii::app()->params['developersName'] ?></center>
-        </div>
-    </a>    
+    </div>    
+    
+    <?php $this->renderPartial("Mesero.views.pedido._footer") ?>
 </div>

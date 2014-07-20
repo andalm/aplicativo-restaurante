@@ -13,6 +13,9 @@
  */
 class ProductoTipo extends CActiveRecord
 {
+    const HABILITADO = 1;
+    const DESHABILITADO = 0;
+    
 	/**
 	 * @return string the associated database table name
 	 */
@@ -99,4 +102,6 @@ class ProductoTipo extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+        
+       
 }
