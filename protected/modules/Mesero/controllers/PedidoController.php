@@ -139,6 +139,7 @@ class PedidoController extends Controller
                 {
                     $mesas = Mesa::model()->findAllByAttributes([
                         'sucursalId' => Yii::app()->user->getState('sucursal'),
+                        'estado' => Mesa::ACTIVO,
                     ]);
                     
                     $porductosxTipo = ProductoTipo::model()->findAll();
@@ -349,7 +350,7 @@ class PedidoController extends Controller
         {
             $detect = Yii::app()->mobileDetect;
             
-            if($detect->isMobile() && !Yii::app()->request->isAjaxRequest)
+            if($detect->isMobile())
             {
                 $model = $this->loadModel($id);
                 $model->estado = Pedido::CANCELADO;

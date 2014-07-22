@@ -86,8 +86,8 @@ class Pedido extends CActiveRecord
 			'usuarioId' => 'Usuario que realizo el pedido ref tabla usuario',
 			'mesaId' => 'Mesa en que se realizo el pedido',
 			'impuestoMovimientoId' => 'Impuesto aplicado al pedido',
-			'propina' => 'Propina voluntaria dada por el cliente',
-			'numeroPersonas' => 'Cantidad de personas en la mesa al momento de hacer pedido',
+			'propina' => 'Propina',
+			'numeroPersonas' => 'Número de personas',
 			'consecutivoId' => 'Identificador del consecutivo que se lleva por cada sucursal',
 		);
 	}
@@ -142,7 +142,14 @@ class Pedido extends CActiveRecord
         {
             if($this->isNewRecord)
             {
-                $this->pedidoDetalles = [new PedidoDetalle];            
+                $this->pedidoDetalles = [new PedidoDetalle];
+                $this->propina = '';
+                $this->numeroPersonas = '';
             }
+        }
+        
+        public function attributeDefaults()
+        {
+            
         }
 }

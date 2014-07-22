@@ -35,8 +35,8 @@
         <?php if(!Yii::app()->user->isGuest): ?>
            <?php 
                 $this->renderPartial('_form', array(
-                    'pedido' => pedido,
-                    '$porductosxTipo' => $porductosxTipo,
+                    'pedido' => $pedido,
+                    'porductosxTipo' => $porductosxTipo,
                     'mesas' => $mesas,
                 ))
             ?>

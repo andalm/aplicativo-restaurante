@@ -15,6 +15,9 @@
  */
 class Mesa extends CActiveRecord
 {
+        const ACTIVO = 1;
+        const INACTIVO = 0;
+        
 	/**
 	 * @return string the associated database table name
 	 */
