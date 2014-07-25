@@ -68,12 +68,12 @@ class PedidoDetalle extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'cantidad' => 'Cantidad de producto',
+			'cantidad' => 'Cantidad',
 			'valorUnitario' => 'Valor unitario de producto ',
 			'total' => 'Cantidad * el valor unitario, da la cantidad en dinero total del detalle',
 			'pedidoId' => 'Numero de pedido',
 			'productoId' => 'Producto o item del pedido',
-			'observaciones' => 'Observaciones de cada producto en el pedido',
+			'observaciones' => 'Observaciones',
 			'detalleTipoMovimientoId' => 'Indetificado de tipo de detalle',
 		);
 	}
@@ -120,4 +120,12 @@ class PedidoDetalle extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+        
+        public function init()
+        {
+            if($this->isNewRecord)
+            {
+                $this->detalleTipoMovimiento = new DetalleTipoMovimiento();
+            }
+        }
 }

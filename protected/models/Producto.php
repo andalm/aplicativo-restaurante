@@ -117,4 +117,14 @@ class Producto extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+        
+        public function getnombrePrecio()
+        {
+            return $this->nombre . " - " . $this->precioFormato;
+        }
+        
+        public function getprecioFormato()
+        {
+            return "$ " . Yii::app()->format->formatNumber($this->valor);
+        }
 }

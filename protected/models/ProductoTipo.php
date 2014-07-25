@@ -16,7 +16,14 @@ class ProductoTipo extends CActiveRecord
     const HABILITADO = 1;
     const DESHABILITADO = 0;
     
-	/**
+    /**
+     *
+     * @var string nombre del tipo de producto con sin espacios, se hace para 
+     * mejorar el performance 
+     */
+    protected $nameFormat;
+    
+    /**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
@@ -103,5 +110,12 @@ class ProductoTipo extends CActiveRecord
 		return parent::model($className);
 	}
         
-       
+       public function getnombreFormato()
+       {
+           if($this->nameFormat === NULL)
+           {
+              $this->nameFormat = preg_replace("/\s+/", "_", strtolower($this->nombre));
+           }
+           return $this->nameFormat;
+       }
 }

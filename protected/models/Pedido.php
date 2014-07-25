@@ -141,10 +141,8 @@ class Pedido extends CActiveRecord
         public function init()
         {
             if($this->isNewRecord)
-            {
+            {                
                 $this->pedidoDetalles = [new PedidoDetalle];
-                $this->propina = '';
-                $this->numeroPersonas = '';
             }
         }
         

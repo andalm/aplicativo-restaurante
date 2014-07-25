@@ -25,3 +25,12 @@ function ulMenu($opciones = [], $activo = "")
                     
     return  $ulMenu . "</ul>";
 }
+
+function obtenerTiposDetalle()
+{
+    return CHtml::listData(
+        DetalleTipo::model()->findAll(), 
+        'id',
+        'nombre'
+    );
+}

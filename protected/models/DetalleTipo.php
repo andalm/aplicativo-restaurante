@@ -13,6 +13,7 @@
  */
 class DetalleTipo extends CActiveRecord
 {
+    const DETALLE_NORMAL = 4;
 	/**
 	 * @return string the associated database table name
 	 */

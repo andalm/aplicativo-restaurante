@@ -23,8 +23,15 @@
             <?php foreach($porductosxTipo as $key => $productoxTipo): ?>
                 <?php $style = ($key != 0) ? "display: none" : "" ?>            
                 <div class="row" id="items-<?php echo $productoxTipo->id ?>" style="<?php echo $style ?>">
-                    <h3><?php echo $productoTipo->nombre ?></h3>
-                    Productos
+                    <h3><?php echo $productoxTipo->nombre ?></h3>
+                   <?php 
+                        $this->renderPartial("_productos", [
+                            "productoxTipo" => $productoxTipo,
+                            "pedido" => $pedido,
+                            "indice" => 0,
+                            "form" => $form,
+                        ])
+                    ?>
                 </div>
             <?php endforeach ?>
         </div>
@@ -48,7 +55,8 @@
             <?php echo $pedido->getAttributeLabel("numeroPersonas") ?>
             <?php 
                 echo $form->numberField($pedido, "numeroPersonas", [
-                    "placeholder" => $pedido->getAttributeLabel("numeroPersonas")
+                    "placeholder" => $pedido->getAttributeLabel("numeroPersonas"),
+                    "value" => ($pedido->isNewRecord) ? "" : $pedido->numeroPersonas,
                 ]) 
             ?>
             <?php echo $form->error($pedido, 'numeroPersonas') ?>
@@ -58,7 +66,8 @@
             <?php echo $pedido->getAttributeLabel("propina") ?>
             <?php 
                 echo $form->numberField($pedido, "propina", [
-                    "placeholder" => $pedido->getAttributeLabel("propina")
+                    "placeholder" => $pedido->getAttributeLabel("propina"),
+                    "value" => ($pedido->isNewRecord) ? "" : $pedido->propina,
                 ]) 
             ?>
             <?php echo $form->error($pedido, 'propina') ?>
